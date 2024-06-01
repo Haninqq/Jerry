@@ -1,85 +1,42 @@
 <!DOCTYPE html>
-<html lang="ko">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SK Leader Tool-Kit</title>
     <style>
         body {
-            background-color: #ffffff; /* 배경을 흰 색으로 변경 */
-            font-family: Arial, sans-serif;
             margin: 0;
-            padding: 0;
-            width: 100%; /* 화면 너비에 맞춤 */
-            min-height: 100vh; /* 최소 높이를 100vh로 설정 */
-            overflow-y: auto; /* 수직 스크롤을 허용 */
-            position: relative;
+            background-color: #f0f0f0;
+            overflow-x: hidden;
         }
-        .header {
-            position: relative;
-            top: 10px;
-            left: 215px; /* 첫 번째 이미지의 left 속성에 맞춤 */
-            display: flex;
-            align-items: center;
+        img {
+            display: block;
+            width: 100%;
+            height: auto;
         }
-        .header img {
-            width: auto;
-            height: 75pt; /* 폰트 크기의 1.5배로 조정 */
-            margin-right: 10px;
-        }
-        .header .title {
-            font-family: Arial, sans-serif;
-            color: red;
-            font-size: 50pt;
-        }
-        .image {
-            width: 450px; /* 가로 길이 1.5배 */
-            height: 200px; /* 세로 길이는 그대로 */
+        .link-overlay {
             position: absolute;
+            top: 400px; /* 이미지에서 민트색 사각형의 위치를 조정 (200px 위로 이동) */
+            left: 10px; /* 이미지에서 민트색 사각형의 위치를 조정 (50px 추가로 왼쪽으로 이동) */
+            width: 400px; /* 민트색 사각형의 너비를 조정 */
+            height: 150px; /* 민트색 사각형의 높이를 조정 */
+            background-color: rgba(0, 0, 0, 0); /* 투명 배경 */
         }
-        .image1 {
-            top: 460px; /* 760px에서 300px 위로 이동 */
-            left: 215px; /* sk.png의 오른쪽 x좌표에 맞춤 */
-        }
-        .image2 {
-            top: 460px; /* 760px에서 300px 위로 이동 */
-            left: 685px; /* 215px + 450px + 20px (간격) */
-        }
-        .image3 {
-            top: 680px; /* 980px에서 300px 위로 이동 */
-            left: 215px; /* sk.png의 오른쪽 x좌표에 맞춤 */
-        }
-        .image4 {
-            top: 680px; /* 980px에서 300px 위로 이동 */
-            left: 685px; /* 215px + 450px + 20px (간격) */
-        }
-        .more-link {
+        .message-link-overlay {
             position: absolute;
-            top: 430px; /* 원래 위치에서 300px 위로 이동 */
-            left: 215px; /* 첫 번째 이미지의 왼쪽 끝에 맞춤 */
-            font-size: 12pt;
-            color: gray; /* 링크 텍스트 색상 변경 */
-            text-decoration: none;
-        }
-        .dotted-line {
-            position: absolute;
-            top: 925px; /* 아래 이미지의 50px 아래 (875px + 50px) */
-            left: 215px; /* 제목의 왼쪽 끝에 맞춤 */
-            width: 920px; /* 가로 길이 조정 */
-            border-top: 2px dashed gray; /* 점선과 색상 설정 */
+            top: 20px; /* 메시지 모양 부분의 위치를 조정 */
+            right: calc(20px + 215px); /* 메시지 모양 부분을 왼쪽으로 200px 이동 (현재 위치에서 100px 더 이동) */
+            width: 45px; /* 메시지 모양 부분의 너비를 0.9배로 조정 */
+            height: 45px; /* 메시지 모양 부분의 높이를 0.9배로 조정 */
+            background-color: rgba(0, 0, 0, 0); /* 반투명 배경 */
         }
     </style>
 </head>
 <body>
-    <div class="header">
-        <img src="sk.png" alt="SK 로고">
-        <div class="title">SK Leader Tool-Kit</div>
+    <div style="position: relative;">
+        <img src="image.jpg">
+        <a href="index_1.html" class="link-overlay"></a>
+        <a href="index_2.html" class="message-link-overlay"></a>
     </div>
-    <a href="test.html" class="more-link">+더보기</a>
-    <img src="image.png" alt="이미지 1" class="image image1">
-    <img src="image.png" alt="이미지 2" class="image image2">
-    <img src="image.png" alt="이미지 3" class="image image3">
-    <img src="image.png" alt="이미지 4" class="image image4">
-    <div class="dotted-line"></div>
 </body>
 </html>
