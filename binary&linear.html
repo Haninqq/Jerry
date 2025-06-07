@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>탐색 알고리즘</title>
+  <style>
+    body { font-family: Arial, sans-serif; padding: 20px; }
+    .controls { margin-bottom: 20px; }
+    label { margin-right: 15px; }
+    input[type="number"] { width: 100px; }
+    table { border-collapse: collapse; }
+    td { width: 30px; height: 30px; text-align: center; border: 1px solid #ccc; }
+    .highlight { background-color: yellow; }
+    .found { background-color: lightgreen; }
+  </style>
+</head>
+<body>
+  <div class="controls">
+    <label><input type="radio" name="algorithm" value="linear" checked> Linear Search</label>
+    <label><input type="radio" name="algorithm" value="binary"> Binary Search</label>
+    <input type="number" id="target" min="1" max="100" placeholder="숫자 입력">
+    <button id="startBtn">Find</button>
+  </div>
+
+  <table id="grid"></table>
+
+  <script>
+    const grid = document.getElementById('grid');
+    const startBtn = document.getElementById('startBtn');
+    const targetInput = document.getElementById('target');
+
+    // Create a 10x10 grid of numbers 1-100
+    function createGrid() {
+      const cols = 10;
+      for (let i = 0; i < 10; i++) {
+        const row = document.createElement('tr');
+        for (let j = 0; j < cols; j++) {
+          const num = i * cols + j + 1;
+          const cell = document.createElement('td');
+          cell.textContent = num;
+          cell.dataset.index = num - 1;
+          row.appendChild(cell);
+        }
+        grid.appendChild(row);
+      }
+    }
+
+    // Remove any existing highlights
+    function clearHighlights() {
+      grid.querySelectorAll('td').forEach(cell => {
+        cell.classList.remove('highlight', 'found');
+      });
+    }
+
+    // Sleep helper
+    function sleep(ms) {
+      return new Promise(resolve => setTimeout(resolve, ms));
+    }
+
+    // Linear search visualization
+    async function linearSearch(target) {
+      const cells = Array.from(grid.querySelectorAll('td'));
+      for (let i = 0; i < cells.length; i++) {
+        clearHighlights();
+        const cell = cells[i];
+        cell.classList.add('highlight');
+        await sleep(300);
+        if (Number(cell.textContent) === target) {
+          cell.classList.add('found');
+          return;
+        }
+      }
+      alert('Value not found.');
+    }
+
+    // Binary search visualization
+    async function binarySearch(target) {
+      const cells = Array.from(grid.querySelectorAll('td'));
+      let low = 0, high = cells.length - 1;
+      while (low <= high) {
+        clearHighlights();
+        const mid = Math.floor((low + high) / 2);
+        const cell = cells[mid];
+        cell.classList.add('highlight');
+        await sleep(500);
+        const val = Number(cell.textContent);
+        if (val === target) {
+          cell.classList.add('found');
+          return;
+        } else if (val < target) {
+          low = mid + 1;
+        } else {
+          high = mid - 1;
+        }
+      }
+      alert('Value not found.');
+    }
+
+    // Start button event
+    startBtn.addEventListener('click', async () => {
+      clearHighlights();
+      const target = Number(targetInput.value);
+      if (!target || target < 1 || target > 100) {
+        alert('1부터 100 사이의 숫자를 입력하세요.');
+        return;
+      }
+      const alg = document.querySelector('input[name="algorithm"]:checked').value;
+      if (alg === 'linear') {
+        await linearSearch(target);
+      } else {
+        await binarySearch(target);
+      }
+    });
+
+    createGrid();
+  </script>
+</body>
+</html>
