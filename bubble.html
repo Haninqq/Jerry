@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>버블 정렬 (애니메이션 + 속도조절)</title>
+  <style>
+    body { font-family: 'Pretendard', sans-serif; text-align: center; background: #fff; }
+    h1 { margin-top: 2rem; font-size: 2.8rem; letter-spacing: 0.05em; }
+    canvas { margin-top: 2rem; background: #f8fafe; border-radius: 14px; }
+    button { margin: 2rem 0.5rem; font-size: 1.2rem; padding: 0.7em 2em; border-radius: 1em; border: none; background: #7ee4a2; color: #222; cursor: pointer; }
+    .slider-box { margin: 2rem auto 0; width: 340px; }
+    .slider-label { font-size: 1.1rem; margin-right: 12px; color: #555; }
+    .slider-value { font-weight: bold; margin-left: 8px; }
+    input[type=range] { width: 180px; vertical-align: middle; }
+    .slider-desc { display: flex; justify-content: space-between; font-size: 0.97rem; color: #888; margin-top: -7px; }
+  </style>
+</head>
+<body>
+  <h1>버블 정렬 (애니메이션)</h1>
+  <canvas id="chart" width="500" height="300"></canvas>
+  <div>
+    <button onclick="startSort()" id="sortBtn">정렬 시작</button>
+    <button onclick="shuffle()" id="shuffleBtn">랜덤 배열</button>
+  </div>
+  <div class="slider-box">
+    <label class="slider-label" for="speedRange">속도</label>
+    <input type="range" id="speedRange" min="0.3" max="3" step="0.01" value="1">
+    <span class="slider-value" id="speedText">보통</span>
+  </div>
+  <script>
+    // --------- 속도 슬라이더 관련 ----------
+    let speedMultiplier = 1.0;
+    const speedRange = document.getElementById('speedRange');
+    const speedText = document.getElementById('speedText');
+    speedRange.addEventListener('input', e => {
+      speedMultiplier = 1/Number(e.target.value);
+      if (speedMultiplier >= 2) speedText.textContent = '느림';
+      else if (speedMultiplier <= 0.5) speedText.textContent = '빠름';
+      else speedText.textContent = '보통';
+    });
+    speedRange.value = 1;
+    speedRange.dispatchEvent(new Event('input'));
+
+    // --------- 버블 정렬 관련 ----------
+    const ctx = document.getElementById('chart').getContext('2d');
+    let values = [60, 270, 90, 120, 180, 30, 150, 240, 210];
+    let fixedCount = 0;
+    let isSorting = false;
+
+    const COLOR_GRAY = "#dbe1e7";
+    const COLOR_BLUE = "#83b8fd";
+    const COLOR_GREEN = "#66e09a";
+
+    const canvasWidth = 500, canvasHeight = 300, baseY = 280;
+    const n = values.length;
+    const totalBarSpace = canvasWidth * 0.88;
+    const barWidth = Math.floor(totalBarSpace / (n * 1.35));
+    const gap = Math.floor((totalBarSpace - barWidth * n) / (n - 1));
+    const offsetX = Math.floor((canvasWidth - (n * barWidth + (n - 1) * gap)) / 2);
+
+    let positions = [];
+    function setPositions() {
+      positions = [];
+      for (let i = 0; i < values.length; i++) {
+        positions.push(offsetX + i * (barWidth + gap));
+      }
+    }
+    setPositions();
+
+    function drawChart(compareIdx = -1, sortedCount = 0, moving = {}) {
+      ctx.clearRect(0, 0, canvasWidth, canvasHeight);
+      for (let i = 0; i < values.length; i++) {
+        let color = COLOR_GRAY;
+        if (i >= values.length - sortedCount) color = COLOR_GREEN; // 정렬 완료
+        else if (compareIdx >= 0 && (i === compareIdx || i === compareIdx + 1)) color = COLOR_BLUE; // 비교 중
+        let x = positions[i];
+        if (moving && moving[i] !== undefined) x = moving[i];
+        ctx.fillStyle = color;
+        ctx.fillRect(x, baseY - values[i], barWidth, values[i]);
+        ctx.fillStyle = '#b0b6bc';
+        ctx.fillRect(x, baseY, barWidth, 4);
+      }
+    }
+    function shuffle() {
+      for(let i=values.length-1; i>0; i--){
+        const j = Math.floor(Math.random() * (i + 1));
+        [values[i], values[j]] = [values[j], values[i]];
+      }
+      fixedCount = 0;
+      setPositions();
+      drawChart(-1, 0);
+    }
+
+    async function animateSwap(idx1, idx2) {
+      const steps = 18;
+      let pos1 = positions[idx1];
+      let pos2 = positions[idx2];
+      const diff = pos2 - pos1;
+      for (let step = 1; step <= steps; step++) {
+        let moving = {};
+        moving[idx1] = pos1 + (diff * step / steps);
+        moving[idx2] = pos2 - (diff * step / steps);
+        drawChart(idx1, fixedCount, moving);
+        await sleep(16 * speedMultiplier);
+      }
+      [values[idx1], values[idx2]] = [values[idx2], values[idx1]];
+      setPositions();
+      drawChart(-1, fixedCount);
+      await sleep(60 * speedMultiplier);
+    }
+
+    async function startSort() {
+      if (isSorting) return;
+      isSorting = true;
+      document.getElementById('sortBtn').disabled = true;
+      document.getElementById('shuffleBtn').disabled = true;
+      setPositions();
+
+      let n = values.length;
+      fixedCount = 0;
+
+      for (let i = 0; i < n - 1; i++) {
+        for (let j = 0; j < n - 1 - i; j++) {
+          drawChart(j, fixedCount);
+          await sleep(260 * speedMultiplier);
+          if (values[j] > values[j + 1]) {
+            await animateSwap(j, j + 1);
+          }
+        }
+        fixedCount++;
+        drawChart(-1, fixedCount);
+        await sleep(180 * speedMultiplier);
+      }
+      fixedCount = n;
+      drawChart(-1, fixedCount);
+      isSorting = false;
+      document.getElementById('sortBtn').disabled = false;
+      document.getElementById('shuffleBtn').disabled = false;
+    }
+
+    function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
+    drawChart();
+  </script>
+</body>
+</html>
